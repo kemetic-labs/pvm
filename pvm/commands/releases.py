@@ -1,10 +1,10 @@
 from rich.console import Console
 from rich.table import Table
 
-from pvm.core.release_service import ReleaseManager
+from pvm.core.release_manager import ReleaseManager
 
 
-def releases():
+def releases_command() -> None:
     manager = ReleaseManager()
     latest_releases = manager.find_latest_releases("8")
     table = Table(title="Versions")

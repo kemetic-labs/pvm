@@ -1,38 +1,37 @@
-from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Callable, Optional
+
+from pvm.core.config import PVMConfig
 
 
 class SourceManager:
+    """
+    Manages the PHP source tree for PVM. Handles clone, fetch, tag listing, and version checkout.
+    """
+
     def __init__(
         self,
-        home: Path | None = None,
+        config: PVMConfig | None = None,
         run_cmd: Optional[Callable] = None,
         check_output: Optional[Callable] = None,
-        console: Any = None,
     ):
-        self.home = home or Path.home()
-        self.pvm_dir = self.home / ".pvm"
-        self.src_dir = self.pvm_dir / "php-src"
+        self.config = config or PVMConfig()
         import subprocess
 
         self.run_cmd = run_cmd or subprocess.run
         self.check_output = check_output or subprocess.check_output
-        if console is None:
-            from rich.console import Console
+        from rich.console import Console
 
-            self.console = Console()
-        else:
-            self.console = console
+        self.console = Console()
 
-    def ensure_src(self):
-        if not self.src_dir.exists():
-            self.pvm_dir.mkdir(exist_ok=True)
+    def ensure_src(self) -> None:
+        if not self.config.src_dir.exists():
+            self.config.pvm_dir.mkdir(exist_ok=True)
             self.console.print("[yellow]Cloning php-src for the first time. This may take a while...[/yellow]")
             self.run_cmd(
-                ["git", "clone", "https://github.com/php/php-src.git", str(self.src_dir)],
+                ["git", "clone", "https://github.com/php/php-src.git", str(self.config.src_dir)],
                 check=True,
             )
-        self.run_cmd(["git", "fetch", "--tags"], cwd=self.src_dir, check=True)
+        self.run_cmd(["git", "fetch", "--tags"], cwd=self.config.src_dir, check=True)
 
     def get_tags(self) -> list[str]:
         self.ensure_src()
@@ -44,7 +43,7 @@ class SourceManager:
                 "--format=%(refname:short)",
                 "refs/tags/php-*",
             ],
-            cwd=self.src_dir,
+            cwd=self.config.src_dir,
             text=True,
         )
         return [line.strip() for line in out.strip().splitlines() if line.strip()]
@@ -59,7 +58,7 @@ class SourceManager:
                 "--format=%(refname:short) %(creatordate:format:%Y-%m-%d)",
                 "refs/tags/php-*",
             ],
-            cwd=self.src_dir,
+            cwd=self.config.src_dir,
             text=True,
         )
         result = []
@@ -72,6 +71,6 @@ class SourceManager:
                 result.append((tag, date))
         return result
 
-    def checkout(self, version: str):
+    def checkout(self, version: str) -> None:
         tag = f"php-{version}"
-        self.run_cmd(["git", "checkout", tag], cwd=self.src_dir, check=True)
+        self.run_cmd(["git", "checkout", tag], cwd=self.config.src_dir, check=True)
