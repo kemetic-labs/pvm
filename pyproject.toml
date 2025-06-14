@@ -18,6 +18,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
+    "pydantic-settings>=2.9.1",
     "rich>=14.0.0",
     "typer>=0.16.0",
 ]
@@ -35,10 +36,8 @@ dev = [
     "pytest>=7.2.0",
     "pre-commit>=2.20.0",
     "tox-uv>=1.11.3",
-
     "mypy>=0.991",
     "pytest-cov>=4.0.0",
-    "ruff>=0.11.5",
     "mkdocs>=1.4.2",
     "mkdocs-material>=8.5.10",
     "mkdocstrings[python]>=0.26.1",
