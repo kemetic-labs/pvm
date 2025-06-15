@@ -16,4 +16,4 @@ def use_command(version: str, config: PVMConfig | None = None) -> None:
                 dst.unlink()
             dst.symlink_to(src)
 
-    print(f'export PATH="{shims_dir}:{bin_dir}:$PATH"')
+    print(f'shims now point to PHP {version}')
