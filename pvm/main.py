@@ -2,7 +2,7 @@ from typing import Optional
 
 import typer
 
-from pvm.commands import doctor_command, install_command, releases_command, use_command
+from pvm.commands import doctor_command, install_command, releases_command, setup_command, use_command
 
 app = typer.Typer()
 
@@ -27,6 +27,12 @@ def install(
 ) -> None:
     """Install a specific PHP version with optional build flags."""
     install_command(version, flags, show_flags)
+
+
+@app.command()
+def setup() -> None:
+    """Setup PVM by adding shims to shell configuration."""
+    setup_command()
 
 
 @app.command()
